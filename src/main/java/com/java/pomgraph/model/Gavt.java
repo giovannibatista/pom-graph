@@ -1,10 +1,11 @@
-package com.java.pomgraph;
+package com.java.pomgraph.model;
 
-public class Gav {
+public class Gavt {
 
 	private String groupId;
 	private String artifactId;
 	private String version;
+	private String type;
 
 	public String getGroupId() {
 		return groupId;
@@ -18,6 +19,10 @@ public class Gav {
 		return version;
 	}
 
+	public String getType() {
+		return type;
+	}
+
 	public static class Builder {
 		public Builder() {
 		}
@@ -25,6 +30,7 @@ public class Gav {
 		private String groupId;
 		private String artifactId;
 		private String version;
+		private String type;
 
 		public Builder setGroupId(String groupId) {
 			this.groupId = groupId;
@@ -43,24 +49,28 @@ public class Gav {
 
 		}
 
-		public Gav build() {
-			return new Gav(this);
+		public Builder setType(String type) {
+			this.type = type;
+			return this;
+
+		}
+
+		public Gavt build() {
+			return new Gavt(this);
 		}
 
 	}
 
-	public Gav(Builder builder) {
+	public Gavt(Builder builder) {
 		this.groupId = builder.groupId;
 		this.artifactId = builder.artifactId;
 		this.version = builder.version;
+		this.type = builder.type;
 	}
 
 	@Override
 	public String toString() {
-		return groupId + "." + artifactId + ":" + version;
+		return groupId + "." + artifactId + ":" + type + ":" + version;
 	}
-	
-	
-	
 
 }

@@ -1,10 +1,12 @@
-package com.java.pomgraph;
+package com.java.pomgraph.gml;
+
+import com.java.pomgraph.model.Gavt;
 
 public class Node {
 
 	private String id;
 	private String label;
-	private Gav gav;
+	private Gavt gavt;
 	
 	public String getId() {
 		return id;
@@ -14,14 +16,14 @@ public class Node {
 		return label;
 	}
 
-	public Gav getGav() {
-		return gav;
+	public Gavt getGav() {
+		return gavt;
 	}
 
 	private Node(Builder builder) {
 		this.id = builder.id;
 		this.label = builder.label;
-		this.gav = builder.gav;
+		this.gavt = builder.gavt;
 	}
 
 	/**
@@ -39,7 +41,7 @@ public class Node {
 	public static final class Builder {
 		private String id;
 		private String label;
-		private Gav gav;
+		private Gavt gavt;
 
 		private Builder() {
 		}
@@ -54,8 +56,8 @@ public class Node {
 			return this;
 		}
 
-		public Builder withGav(Gav gav) {
-			this.gav = gav;
+		public Builder withGav(Gavt gavt) {
+			this.gavt = gavt;
 			return this;
 		}
 

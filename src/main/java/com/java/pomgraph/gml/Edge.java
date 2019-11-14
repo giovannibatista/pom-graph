@@ -1,4 +1,4 @@
-package com.java.pomgraph;
+package com.java.pomgraph.gml;
 
 public class Edge {
 
