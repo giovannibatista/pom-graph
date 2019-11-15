@@ -37,12 +37,12 @@ public class ProjectFactory {
 		List<Gavt> dependencies = new ArrayList<Gavt>();
 
 		for (Dependency dependency : dependenciesModel) {
-			dependencies.add(fromDependency(dependency, filterDpendencyType, filterPatterns));
+			if (isAllowedDependencies(dependency, filterDpendencyType, filterPatterns)) {
+				dependencies.add(fromDependency(dependency));
+			}
 		}
 		return dependencies;
 	}
-
-	
 
 	private static List<Gavt> fromDependenciesModel(List<Dependency> dependenciesModel) {
 		List<Gavt> dependencies = new ArrayList<Gavt>();
@@ -62,15 +62,28 @@ public class ProjectFactory {
 		return new Gavt.Builder().setArtifactId(dependency.getArtifactId()).setGroupId(dependency.getGroupId())
 				.setVersion(dependency.getVersion()).setType(dependency.getType()).build();
 	}
-	
-	private static Gavt fromDependency(Dependency dependency, FilterType filterDpendencyType, String[] filterPatterns) {
-		
-		for (String filter : filterPatterns) {
-			//if(ProjectFactory.is))
-			
+
+	private static boolean isAllowedDependencies(Dependency dependency, FilterType filterDpendencyType,
+			String[] filterPatterns) {
+		for (String pattern : filterPatterns) {
+			switch (filterDpendencyType) {
+			case CONTAINS:
+				if (dependency.getGroupId().toLowerCase().contains(pattern.toLowerCase())
+						|| dependency.getArtifactId().toLowerCase().contains(pattern.toLowerCase())) {
+					return true;
+				}
+				break;
+			case STARTSWITH:
+				if (dependency.getGroupId().toLowerCase().startsWith(pattern.toLowerCase())
+						|| dependency.getArtifactId().toLowerCase().startsWith(pattern.toLowerCase())) {
+					return true;
+				}
+
+			default:
+				break;
+			}
 		}
-		return new Gavt.Builder().setArtifactId(dependency.getArtifactId()).setGroupId(dependency.getGroupId())
-				.setVersion(dependency.getVersion()).setType(dependency.getType()).build();
+		return false;
 	}
 
 	public enum FilterType {

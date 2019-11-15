@@ -29,7 +29,7 @@ public class Edge {
 	 * 
 	 * @return created builder
 	 */
-	public static Builder builder() {
+	public static Builder Builder() {
 		return new Builder();
 	}
 
@@ -62,6 +62,11 @@ public class Edge {
 		public Edge build() {
 			return new Edge(this);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "Edge [id=" + id + ", source=" + source + ", target=" + target + "]";
 	}
 
 }
