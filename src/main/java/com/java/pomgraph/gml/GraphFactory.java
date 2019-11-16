@@ -1,78 +1,56 @@
 package com.java.pomgraph.gml;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.jgrapht.graph.SimpleGraph;
 
 import com.java.pomgraph.model.Gavt;
 import com.java.pomgraph.model.Project;
 
 public class GraphFactory {
-	
-	private List<Node> nodes;
-	private List<Edge> edges;
-	private int idEdge;
-	
+
+	private int edgeLabel;
+
 	public GraphFactory() {
 		super();
-		this.nodes = new ArrayList<Node>();
-		this.edges = new ArrayList<Edge>();
-		this.idEdge = 0;
+		this.edgeLabel = 0;
 	}
 
-	public void fromProjects(List<Project> projects) {
-		
+	public SimpleGraph<Node, Edge> fillSimpleGraphfromProjects(List<Project> projects) {
+
+		SimpleGraph<Node, Edge> simpleGraph = new SimpleGraph<Node, Edge>(Edge.class);
+
 		Node nodeProject = null;
 		Node nodeDependency = null;
 		for (Project project : projects) {
 			nodeProject = this.fromGavt(project.getArtifact());
-			nodeProject = addNode(nodeProject);
-			
+			// nodeProject = addNode(nodeProject);
+
+			simpleGraph.addVertex(nodeProject);
+
 			for (Gavt dependency : project.getDependencies()) {
 				nodeDependency = this.fromGavt(dependency);
-				nodeDependency = addNode(nodeDependency);
-				
-				this.addEdge(nodeProject, nodeDependency);
+				// nodeDependency = addNode(nodeDependency);
+
+				simpleGraph.addVertex(nodeDependency);
+				simpleGraph.addEdge(nodeProject, nodeDependency, new Edge(1, "" + edgeLabel++));
 			}
+			this.edgeLabel = 0;
 		}
+		return simpleGraph;
 	}
-	
-	private Node addNode(Node node) {
-		
-		if(nodes.contains(node)) {
-			return nodes.stream().filter(n -> n.equals(node)).findFirst().get();
-		}
-		
-		nodes.add(node);
-		return node;
-	}
-	
-	private void addEdge(Node source, Node target) {
-		this.edges.add(this.fromNodes(source, target));
-	}
-	
-	
+
+	/*
+	 * private Node addNode(Node node) {
+	 * 
+	 * if(nodes.contains(node)) { return nodes.stream().filter(n ->
+	 * n.equals(node)).findFirst().get(); }
+	 * 
+	 * nodes.add(node); return node; }
+	 */
+
 	private Node fromGavt(Gavt gavt) {
 		return Node.Builder().withGav(gavt).withId(gavt.toString()).withLabel(gavt.toString()).build();
-	}
-	
-	private Edge fromNodes(Node source, Node target) {
-		return Edge.Builder().withSource(source).withTarget(target).withId(""+this.idEdge++).build();
-	}
-
-	public List<Node> getNodes() {
-		return nodes;
-	}
-
-	public void setNodes(List<Node> nodes) {
-		this.nodes = nodes;
-	}
-
-	public List<Edge> getEdges() {
-		return edges;
-	}
-
-	public void setEdges(List<Edge> edges) {
-		this.edges = edges;
 	}
 
 }

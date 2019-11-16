@@ -1,18 +1,26 @@
 package com.java.pomgraph;
 
+import static com.github.systemdir.gml.YedGmlWriter.PRINT_LABELS;
+
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.maven.model.Model;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;import org.jgrapht.EdgeFactory;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.jgrapht.graph.SimpleGraph;
 
+import com.github.systemdir.gml.YedGmlWriter;
 import com.java.pomgraph.ProjectFactory.FilterType;
 import com.java.pomgraph.gml.Edge;
 import com.java.pomgraph.gml.GraphFactory;
+import com.java.pomgraph.gml.GraphProvider;
+import com.java.pomgraph.gml.Group;
 import com.java.pomgraph.gml.Node;
 import com.java.pomgraph.model.Gavt;
 import com.java.pomgraph.model.Project;
@@ -23,7 +31,8 @@ public class PomGraph {
 
 		// Read pom file
 		PomReader pomReader = new PomReader();
-		List<Model> models = pomReader.readPomFileFromDirectory("/Users/giovannicarlos/dev/pom-utils/cer");
+		final String directoryPath = "/Users/giovannicarlos/dev/pom-utils/cer";
+		List<Model> models = pomReader.readPomFileFromDirectory(directoryPath);
 
 		// Filter the dependencies and create a list of projects(pom files)
 		List<Project> projects = ProjectFactory.fromModelsWithFilters(models, FilterType.STARTSWITH, "com.procergs",
@@ -46,17 +55,31 @@ public class PomGraph {
 		
 		GraphFactory graphFactory = new GraphFactory();
 		
-		graphFactory.fromProjects(projects);
-		
-		
-
 		// Create graph
-		SimpleGraph<Node, Edge> simpleGraph = new SimpleGraph<Node, Edge>(Edge.class);
+		SimpleGraph<Node, Edge> simpleGraph = graphFactory.fillSimpleGraphfromProjects(projects);
 		
-		for (Node node : graphFactory.getNodes()) {
-			simpleGraph.addVertex(node);
-			//TODO: Refactor edge...
-		}
+		 // define the look and feel of the graph
+        GraphProvider graphicsProvider = new GraphProvider();
+
+        // get the gml writer
+        YedGmlWriter<Node,Edge,Group> writer 
+                = new YedGmlWriter.Builder<>(graphicsProvider, PRINT_LABELS)
+                .setVertexLabelProvider(Node::getLabel)
+                .setEdgeLabelProvider(Edge::getLabel)
+                .build();
+
+        
+        // write to file
+        if(! new File(directoryPath).exists()) {
+        	new File(directoryPath).mkdir();//create folder
+        }
+        File outputFile=new File(directoryPath+File.separator+"pom.gml");
+        try (Writer output = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(outputFile), "utf-8"))) {
+            writer.export(output, simpleGraph);
+        }
+        
+        System.out.println("Exported to: "+outputFile.getAbsolutePath());
 		
 	}
 

@@ -1,72 +1,32 @@
 package com.java.pomgraph.gml;
 
-public class Edge {
+import org.jgrapht.graph.DefaultEdge;
 
-	private String id;
-	private Node source;
-	private Node target;
-
-	private Edge(Builder builder) {
-		this.id = builder.id;
-		this.source = builder.source;
-		this.target = builder.target;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public Node getSource() {
-		return source;
-	}
-
-	public Node getTarget() {
-		return target;
-	}
-
+public class Edge extends DefaultEdge {
 	/**
-	 * Creates builder to build {@link Edge}.
 	 * 
-	 * @return created builder
 	 */
-	public static Builder Builder() {
-		return new Builder();
+	private static final long serialVersionUID = 1L;
+
+	private final int accessQuantity;
+	private String label;
+
+	public Edge(int accessQuantity, String label) {
+		super();
+		this.accessQuantity = accessQuantity;
+		this.label = label;
 	}
 
-	/**
-	 * Builder to build {@link Edge}.
-	 */
-	public static final class Builder {
-		private String id;
-		private Node source;
-		private Node target;
-
-		private Builder() {
-		}
-
-		public Builder withId(String id) {
-			this.id = id;
-			return this;
-		}
-
-		public Builder withSource(Node source) {
-			this.source = source;
-			return this;
-		}
-
-		public Builder withTarget(Node target) {
-			this.target = target;
-			return this;
-		}
-
-		public Edge build() {
-			return new Edge(this);
-		}
+	public int getAccessQuantity() {
+		return accessQuantity;
 	}
 
-	@Override
-	public String toString() {
-		return "Edge [id=" + id + ", source=" + source + ", target=" + target + "]";
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 }
