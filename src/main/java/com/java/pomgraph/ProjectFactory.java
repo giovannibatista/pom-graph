@@ -11,7 +11,6 @@ import com.java.pomgraph.model.Project;
 
 public class ProjectFactory {
 
-	//${prassinador.applet.version}
 	private final static String SUFFIX_DEPENDENCY_EXCLUDE = "}";
 	private final static String PREFIX_DEPENDENCY_EXCLUDE = "${";
 
@@ -45,8 +44,8 @@ public class ProjectFactory {
 		List<Gavt> dependencies = new ArrayList<Gavt>();
 
 		for (Dependency dependency : dependenciesModel) {
-			if(isDependecyVersionStartsOrEndsWith(dependency.getVersion())) {
-				System.err.println("Dependëncia apresenta problemas: " + dependency.toString());
+			if (isDependecyVersionStartsOrEndsWith(dependency.getVersion())) {
+				System.err.println("Dependencia apresenta problemas: " + dependency.toString());
 				continue;
 			}
 			if (isAllowedDependencies(dependency, filterDpendencyType, filterPatterns)) {
@@ -107,16 +106,19 @@ public class ProjectFactory {
 
 	public enum FilterType {
 		CONTAINS(1), STARTSWITH(2), ENDSWITH(3), EQUAL(4), EQUALIGNORECASE(5);
-		
+
 		private int id;
+
 		FilterType(int id) {
 			this.id = id;
 		}
+
 		public static FilterType getById(int id) {
-		    for(FilterType e : values()) {
-		        if(e.id == id) return e;
-		    }
-		    return CONTAINS;
+			for (FilterType e : values()) {
+				if (e.id == id)
+					return e;
+			}
+			return CONTAINS;
 		}
 	}
 

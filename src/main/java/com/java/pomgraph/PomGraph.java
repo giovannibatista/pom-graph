@@ -34,56 +34,54 @@ public class PomGraph {
 	private static final String CURRENT_DIRECTORY = System.getProperty("user.dir");
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, XmlPullParserException {
-        Scanner sc = new Scanner(System.in);
+		Scanner sc = new Scanner(System.in);
 
 		// Read pom file
 		PomReader pomReader = new PomReader();
-		
-		//String pomPath = "/Users/giovannicarlos/dev/pom-utils/cer";
-		//String directoryOuputPath = "/Users/giovannicarlos/dev/pom-utils/cer/output";
-	
+
 		String pomPath = "";
 		String directoryOuputPath = "";
-		
 
-		System.out.println("Diretório atual é: " + CURRENT_DIRECTORY);
-		
+		System.out.println("Direterio atual: " + CURRENT_DIRECTORY);
+
 		do {
-            System.out.print("Informe o diretório dos arquivos pom(Informe '.' para diretório atual): ");
-            pomPath = sc.next();
-        } while (pomPath.isEmpty());
+			System.out.print("Informe o direterio dos arquivos pom(Informe '.' para direterio atual): ");
+			pomPath = sc.next();
+		} while (pomPath.isEmpty());
 
-        do {
-            System.out.print("Informe o diretório dos arquivos gerados(Informe '.' para diretório atual): ");
-            directoryOuputPath = sc.next();
-        } while (directoryOuputPath.isEmpty());
+		do {
+			System.out.print("Informe o direterio dos arquivos gerados(Informe '.' para direterio atual): ");
+			directoryOuputPath = sc.next();
+		} while (directoryOuputPath.isEmpty());
 
-        pomPath = pomPath.equals(".") ? CURRENT_DIRECTORY : pomPath;
-        directoryOuputPath = directoryOuputPath.equals(".") ? CURRENT_DIRECTORY : directoryOuputPath;
-
+		pomPath = pomPath.equals(".") ? CURRENT_DIRECTORY : pomPath;
+		directoryOuputPath = directoryOuputPath.equals(".") ? CURRENT_DIRECTORY : directoryOuputPath;
 
 		List<Model> models = pomReader.readPomFileFromDirectory(pomPath);
-		
+
 		List<String> filters = new ArrayList<String>();
-		
+
 		String filterIn = "";
 		do {
-            System.out.print("Informe os groupId das dependências que deseja filtrar(Informe '.' para prosseguir): ");
-            filterIn = sc.next();
-            if(!filterIn.equals(".")) {
-            	filters.add(filterIn);
-            }
-        } while (!filterIn.equals("."));
-		
+			System.out.print("Informe os groupId das dependencias que deseja filtrar(Informe '.' para prosseguir): ");
+			filterIn = sc.next();
+			if (!filterIn.equals(".")) {
+				filters.add(filterIn);
+			}
+		} while (!filterIn.equals("."));
+
 		int filterTypeId = 0;
-		
+
 		do {
-            System.out.print("Informe o tipo de filtro(1: CONTAINS e 2:STARTS_WITH): ");
-            filterTypeId = sc.nextInt();
-        } while (filterTypeId == 0);
+			System.out.print("Informe o tipo de filtro(1: CONTAINS e 2:STARTS_WITH): ");
+			filterTypeId = sc.nextInt();
+		} while (filterTypeId == 0);
+
+		sc.close();
 
 		// Filter the dependencies and create a list of projects(pom files)
-		List<Project> projects = ProjectFactory.fromModelsWithFilters(models, FilterType.getById(filterTypeId), filters);
+		List<Project> projects = ProjectFactory.fromModelsWithFilters(models, FilterType.getById(filterTypeId),
+				filters);
 		StringBuilder contentFile = new StringBuilder();
 		for (Project project : projects) {
 			contentFile.append(project).append(System.getProperty("line.separator"));
@@ -94,39 +92,32 @@ public class PomGraph {
 		}
 
 		// Write to file
-		FileWriter fileWriter = FileWriter.Builder().withOutputPath(directoryOuputPath)
-				.build();
+		FileWriter fileWriter = FileWriter.Builder().withOutputPath(directoryOuputPath).build();
 		fileWriter.writer(POM_DESC_FILENAME, contentFile.toString());
-		
-		
+
 		GraphFactory graphFactory = new GraphFactory();
-		
+
 		// Create graph
 		SimpleGraph<Node, Edge> simpleGraph = graphFactory.fillSimpleGraphfromProjects(projects);
-		
-		 // define the look and feel of the graph
-        GraphProvider graphicsProvider = new GraphProvider();
 
-        // get the gml writer
-        YedGmlWriter<Node,Edge,Group> writer 
-                = new YedGmlWriter.Builder<>(graphicsProvider, PRINT_LABELS)
-                .setVertexLabelProvider(Node::getLabel)
-                .setEdgeLabelProvider(Edge::getLabel)
-                .build();
+		// define the look and feel of the graph
+		GraphProvider graphicsProvider = new GraphProvider();
 
-        
-        // write to file
-        if(! new File(directoryOuputPath).exists()) {
-        	new File(directoryOuputPath).mkdir();//create folder
-        }
-        File outputFile=new File(directoryOuputPath+File.separator+POM_GML_FILENAME);
-        try (Writer output = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(outputFile), "utf-8"))) {
-            writer.export(output, simpleGraph);
-        }
-        
-        System.out.println("Arquivo gerado em: "+outputFile.getAbsolutePath());
-		
+		// get the gml writer
+		YedGmlWriter<Node, Edge, Group> writer = new YedGmlWriter.Builder<>(graphicsProvider, PRINT_LABELS)
+				.setVertexLabelProvider(Node::getLabel).setEdgeLabelProvider(Edge::getLabel).build();
+
+		// write to file
+		if (!new File(directoryOuputPath).exists()) {
+			new File(directoryOuputPath).mkdir();// create folder
+		}
+		File outputFile = new File(directoryOuputPath + File.separator + POM_GML_FILENAME);
+		try (Writer output = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "utf-8"))) {
+			writer.export(output, simpleGraph);
+		}
+
+		System.out.println("Arquivo gerado em: " + outputFile.getAbsolutePath());
+
 	}
 
 }

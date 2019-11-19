@@ -21,13 +21,11 @@ public class GraphFactory {
 		Node nodeDependency = null;
 		for (Project project : projects) {
 			nodeProject = this.fromGavt(project.getArtifact());
-			// nodeProject = addNode(nodeProject);
 
 			simpleGraph.addVertex(nodeProject);
 
 			for (Gavt dependency : project.getDependencies()) {
 				nodeDependency = this.fromGavt(dependency);
-				// nodeDependency = addNode(nodeDependency);
 				simpleGraph.addVertex(nodeDependency);
 				simpleGraph.addEdge(nodeProject, nodeDependency,
 						new Edge.Builder().setLabel(dependency.getVersion()).build());
@@ -35,15 +33,6 @@ public class GraphFactory {
 		}
 		return simpleGraph;
 	}
-
-	/*
-	 * private Node addNode(Node node) {
-	 * 
-	 * if(nodes.contains(node)) { return nodes.stream().filter(n ->
-	 * n.equals(node)).findFirst().get(); }
-	 * 
-	 * nodes.add(node); return node; }
-	 */
 
 	private Node fromGavt(Gavt gavt) {
 		return Node.Builder().withGav(gavt).withId(gavt.toString()).withLabel(gavt.toString()).build();

@@ -42,9 +42,8 @@ public class Project {
 
 	@Override
 	public String toString() {
-		return "Project [artifact=" + artifact + ", dependencies.size=" + (dependencies != null ? dependencies.size() : 0) + "]";
+		return "Project [artifact=" + artifact + ", dependencies.size="
+				+ (dependencies != null ? dependencies.size() : 0) + "]";
 	}
-	
-	
 
 }

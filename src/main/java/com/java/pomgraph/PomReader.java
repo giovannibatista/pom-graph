@@ -24,7 +24,7 @@ public class PomReader {
 		try {
 			model = reader.read(new FileReader(pomPath.toFile()));
 		} catch (FileNotFoundException e) {
-			System.err.println("Arquivo não encontrado");
+			System.err.println("Arquivo nao encontrado");
 		} catch (IOException | XmlPullParserException e) {
 			e.printStackTrace();
 			System.err.println("Erro ao manipular o arquivo!");
@@ -46,7 +46,5 @@ public class PomReader {
 		}
 		return models;
 	}
-
-	
 
 }
