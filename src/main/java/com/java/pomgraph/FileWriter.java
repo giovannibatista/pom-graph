@@ -57,7 +57,7 @@ public class FileWriter {
 			throw new RuntimeException(e);
 		}
         
-        System.out.println("Exported to: "+outputFile.getAbsolutePath());
+        System.out.println("Arquivo gerado em: "+outputFile.getAbsolutePath());
 	}
 	
 	

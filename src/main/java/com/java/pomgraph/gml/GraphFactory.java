@@ -9,11 +9,8 @@ import com.java.pomgraph.model.Project;
 
 public class GraphFactory {
 
-	private int edgeLabel;
-
 	public GraphFactory() {
 		super();
-		this.edgeLabel = 0;
 	}
 
 	public SimpleGraph<Node, Edge> fillSimpleGraphfromProjects(List<Project> projects) {
@@ -31,11 +28,10 @@ public class GraphFactory {
 			for (Gavt dependency : project.getDependencies()) {
 				nodeDependency = this.fromGavt(dependency);
 				// nodeDependency = addNode(nodeDependency);
-
 				simpleGraph.addVertex(nodeDependency);
-				simpleGraph.addEdge(nodeProject, nodeDependency, new Edge(1, "" + edgeLabel++));
+				simpleGraph.addEdge(nodeProject, nodeDependency,
+						new Edge.Builder().setLabel(dependency.getVersion()).build());
 			}
-			this.edgeLabel = 0;
 		}
 		return simpleGraph;
 	}

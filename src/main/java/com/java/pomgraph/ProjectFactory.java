@@ -11,6 +11,10 @@ import com.java.pomgraph.model.Project;
 
 public class ProjectFactory {
 
+	//${prassinador.applet.version}
+	private final static String SUFFIX_DEPENDENCY_EXCLUDE = "}";
+	private final static String PREFIX_DEPENDENCY_EXCLUDE = "${";
+
 	public static List<Project> fromModels(List<Model> models) {
 		List<Project> projects = new ArrayList<Project>();
 		for (Model model : models) {
@@ -21,9 +25,13 @@ public class ProjectFactory {
 	}
 
 	public static List<Project> fromModelsWithFilters(List<Model> models, FilterType filterDpendencyType,
-			String... filterPatterns) {
+			List<String> filterPatterns) {
 		List<Project> projects = new ArrayList<Project>();
 		for (Model model : models) {
+			if (model.getArtifactId() == null || model.getGroupId() == null || model.getVersion() == null) {
+				System.err.println("Projeto(POM) apresenta problemas: " + model.toString());
+				continue;
+			}
 			projects.add(new Project.Builder()
 					.setArtifact(ProjectFactory.fromModel(model)).setDependencies(ProjectFactory
 							.fromDependenciesModel(model.getDependencies(), filterDpendencyType, filterPatterns))
@@ -33,10 +41,14 @@ public class ProjectFactory {
 	}
 
 	private static List<Gavt> fromDependenciesModel(List<Dependency> dependenciesModel, FilterType filterDpendencyType,
-			String[] filterPatterns) {
+			List<String> filterPatterns) {
 		List<Gavt> dependencies = new ArrayList<Gavt>();
 
 		for (Dependency dependency : dependenciesModel) {
+			if(isDependecyVersionStartsOrEndsWith(dependency.getVersion())) {
+				System.err.println("Dependëncia apresenta problemas: " + dependency.toString());
+				continue;
+			}
 			if (isAllowedDependencies(dependency, filterDpendencyType, filterPatterns)) {
 				dependencies.add(fromDependency(dependency));
 			}
@@ -64,7 +76,7 @@ public class ProjectFactory {
 	}
 
 	private static boolean isAllowedDependencies(Dependency dependency, FilterType filterDpendencyType,
-			String[] filterPatterns) {
+			List<String> filterPatterns) {
 		for (String pattern : filterPatterns) {
 			switch (filterDpendencyType) {
 			case CONTAINS:
@@ -86,8 +98,26 @@ public class ProjectFactory {
 		return false;
 	}
 
+	private static boolean isDependecyVersionStartsOrEndsWith(String version) {
+		if (version == null) {
+			return false;
+		}
+		return version.startsWith(PREFIX_DEPENDENCY_EXCLUDE) || version.endsWith(SUFFIX_DEPENDENCY_EXCLUDE);
+	}
+
 	public enum FilterType {
-		CONTAINS, STARTSWITH, ENDSWITH, EQUAL, EQUALIGNORECASE;
+		CONTAINS(1), STARTSWITH(2), ENDSWITH(3), EQUAL(4), EQUALIGNORECASE(5);
+		
+		private int id;
+		FilterType(int id) {
+			this.id = id;
+		}
+		public static FilterType getById(int id) {
+		    for(FilterType e : values()) {
+		        if(e.id == id) return e;
+		    }
+		    return CONTAINS;
+		}
 	}
 
 }

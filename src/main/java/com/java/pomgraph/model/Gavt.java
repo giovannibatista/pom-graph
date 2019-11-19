@@ -68,9 +68,14 @@ public class Gavt {
 		this.type = builder.type;
 	}
 
+	public String toLabel() {
+		return groupId + "." + artifactId + ":" + type + ":" + version;
+
+	}
+
 	@Override
 	public String toString() {
-		return groupId + "." + artifactId + ":" + type + ":" + version;
+		return groupId + "." + artifactId + ":" + type;
 	}
 
 }
